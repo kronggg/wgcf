@@ -1,0 +1,29 @@
+name: Generate WARP config
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+
+      - name: Run warp.sh
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/rany2/warp.sh/main/warp.sh -o warp.sh
+          chmod +x warp.sh
+          ./warp.sh wg
+          ls -l
+
+      - name: Upload config
+        uses: actions/upload-artifact@v4
+        with:
+          name: warp-config
+          path: warp.conf
