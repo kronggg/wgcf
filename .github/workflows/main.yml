@@ -1,4 +1,4 @@
-name: Generate WARP config
+name: Generate WARP config (wgcf)
 
 on:
   workflow_dispatch: {}
@@ -6,24 +6,31 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Download wgcf
         run: |
-          sudo apt-get update
-          sudo apt-get install -y curl
+          WGCF_VERSION=$(curl -fsSL https://api.github.com/repos/ViRb3/wgcf/releases/latest | jq -r '.tag_name')
+          curl -fsSL -o wgcf.tar.gz \
+            https://github.com/ViRb3/wgcf/releases/download/${WGCF_VERSION}/wgcf_${WGCF_VERSION#v}_linux_amd64.tar.gz
+          tar xzf wgcf.tar.gz
+          chmod +x wgcf
 
-      - name: Run warp.sh
+      - name: Register WARP account
         run: |
-          curl -fsSL https://raw.githubusercontent.com/rany2/warp.sh/main/warp.sh -o warp.sh
-          chmod +x warp.sh
-          ./warp.sh wg
+          yes | ./wgcf register
+          ls -l
+
+      - name: Generate WireGuard profile
+        run: |
+          ./wgcf generate
           ls -l
 
       - name: Upload config
         uses: actions/upload-artifact@v4
         with:
-          name: warp-config
-          path: warp.conf
+          name: wgcf-profile
+          path: wgcf-profile.conf
