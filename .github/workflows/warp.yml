@@ -18,9 +18,8 @@ jobs:
 
       - name: Download wgcf
         run: |
-          RAW_VER=$(curl -fsSL https://api.github.com/repos/ViRb3/wgcf/releases/latest | jq -r '.tag_name')
-          WGCF_VERSION="${RAW_VER#v}"
-          echo "Latest wgcf version: $WGCF_VERSION"
+          WGCF_VERSION="2.2.30"
+          echo "Using wgcf version: $WGCF_VERSION"
           curl -fsSL -o wgcf.tar.gz \
             https://github.com/ViRb3/wgcf/releases/download/v${WGCF_VERSION}/wgcf_${WGCF_VERSION}_linux_amd64.tar.gz
           tar xzf wgcf.tar.gz
