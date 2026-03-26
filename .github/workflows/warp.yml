@@ -11,13 +11,21 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
       - name: Download wgcf
         run: |
-          WGCF_VERSION=$(curl -fsSL https://api.github.com/repos/ViRb3/wgcf/releases/latest | jq -r '.tag_name')
+          RAW_VER=$(curl -fsSL https://api.github.com/repos/ViRb3/wgcf/releases/latest | jq -r '.tag_name')
+          WGCF_VERSION="${RAW_VER#v}"
+          echo "Latest wgcf version: $WGCF_VERSION"
           curl -fsSL -o wgcf.tar.gz \
-            https://github.com/ViRb3/wgcf/releases/download/${WGCF_VERSION}/wgcf_${WGCF_VERSION#v}_linux_amd64.tar.gz
+            https://github.com/ViRb3/wgcf/releases/download/v${WGCF_VERSION}/wgcf_${WGCF_VERSION}_linux_amd64.tar.gz
           tar xzf wgcf.tar.gz
           chmod +x wgcf
+          ls -l
 
       - name: Register WARP account
         run: |
